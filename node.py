@@ -399,10 +399,15 @@ class Node(threading.Thread):
         """This method is invoked when a node send us a message.
             data is a string, need to convert to a message object
         """
-        self.debug_print("node_message: " + node.id + ": " + data)
-        parts = data.split(":")
+        self.debug_print("node_message: " + node.id + ": " + str(data))
+        
+        parts = str(data).split(":")
+        print(parts[1])
         messagebody = parts[1].split("of type")[0].strip()
-        type = int(parts[2].strip())
+        type = int(parts[1].split("of type")[1].strip())
+
+        print(messagebody)
+        print(type)
         
         if(type == BLOCKCHAIN):
             self.receive_chain(messagebody)

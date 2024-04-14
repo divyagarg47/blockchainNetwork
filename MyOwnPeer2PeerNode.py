@@ -29,8 +29,8 @@ class MyOwnPeer2PeerNode (Node):
     def outbound_node_disconnected(self, node):
         print("outbound_node_disconnected: (" + self.id + "): " + node.id)
 
-    def node_message(self, node, data):
-        print("node_message (" + self.id + ") from " + node.id + ": " + str(data))
+    # def node_message(self, node, data):
+    #     print("node_message (" + self.id + ") from " + node.id + ": " + str(data))
         
     def node_disconnect_with_outbound_node(self, node):
         print("node wants to disconnect with oher outbound node: (" + self.id + "): " + node.id)
