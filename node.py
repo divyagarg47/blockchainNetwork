@@ -402,7 +402,7 @@ class Node(threading.Thread):
         self.debug_print("node_message: " + node.id + ": " + data)
         parts = data.split(":")
         messagebody = parts[1].split("of type")[0].strip()
-        type = parts[2].strip()
+        type = int(parts[2].strip())
         
         if(type == BLOCKCHAIN):
             self.receive_chain(messagebody)
