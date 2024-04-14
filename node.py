@@ -37,7 +37,7 @@ class Node(threading.Thread):
                  connected_node: Which connected node caused the event.
                  data: The data that is send by the connected node."""
 
-    def __init__(self, host, port, id=None, chain=[],transactionpool = [], callback=None, max_connections=1):
+    def __init__(self, host, port, id=None, chain=[],transactionpool = [], callback=None, max_connections=5):
         """Create instance of a Node. If you want to implement the Node functionality with a callback, you should 
            provide a callback method. It is preferred to implement a new node by extending this Node class. 
             host: The host name or ip address that is used to bind the TCP/IP server to.
@@ -168,19 +168,19 @@ class Node(threading.Thread):
             if n in exclude:
                 self.debug_print("Node send_to_nodes: Excluding node in sending the message")
             else:
-                self.send_to_node(n, data, compression)
+                self.send_to_node(n, str(data), compression)
 
         for n in self.nodes_outbound:
             if n in exclude:
                 self.debug_print("Node send_to_nodes: Excluding node in sending the message")
             else:
-                self.send_to_node(n, data, compression)
+                self.send_to_node(n, str(data), compression)
 
     def send_to_node(self, n, data, compression='none'):
         """ Send the data to the node n if it exists."""
         self.message_count_send = self.message_count_send + 1
         if n in self.nodes_inbound or n in self.nodes_outbound:
-            n.send(data, compression=compression)
+            n.send(str(data), compression=compression)
 
         else:
             self.debug_print("Node send_to_node: Could not send the data, node is not found!")
@@ -205,9 +205,10 @@ class Node(threading.Thread):
 
         try:
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            print("REACHED HERE")
             self.debug_print("connecting to %s port %s" % (host, port))
             sock.connect((host, port))
-
+            print("REACHED HERE AGAIN")
             # Basic information exchange (not secure) of the id's of the nodes!
             sock.send((self.id + ":" + str(self.port)).encode('utf-8')) # Send my id and port to the connected node!
             connected_node_id = sock.recv(4096).decode('utf-8') # When a node is connected, it sends its id!

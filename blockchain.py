@@ -13,20 +13,20 @@ sys.path.insert(0, '..') # Import the files where the modules are located
 
 from MyOwnPeer2PeerNode import MyOwnPeer2PeerNode
 from constants import *
-node_1 = MyOwnPeer2PeerNode("10.150.42.151", 8001, 1, [Block.create_genesis_block(), Block(1), Block(2)])
-# node_2 = MyOwnPeer2PeerNode("10.20.1.105", 8002, 2)
+node_1 = MyOwnPeer2PeerNode("10.150.42.151", 8003, 1, [Block.create_genesis_block(), Block(1), Block(2)])
+# node_2 = MyOwnPeer2PeerNode("10.150.42.151", 8002, 2)
 # node_3 = MyOwnPeer2PeerNode("10.20.1.105", 8003, 3)
 
 # time.sleep(1)
 
-# node_1.start()
+node_1.start()
 # node_2.start()
 # node_3.start()
 
 # time.sleep(1)
 
-# debug = True
-# node_1.debug = debug
+debug = True
+node_1.debug = debug
 # node_2.debug = debug
 # node_3.debug = debug
 
@@ -51,7 +51,7 @@ node_1 = MyOwnPeer2PeerNode("10.150.42.151", 8001, 1, [Block.create_genesis_bloc
 # node_3.stop()
 
 
-
+node_1.connect_with_node("10.150.33.221" , 8002)
 
 while(True):
     print("Press 1 to request access to the blockchain")

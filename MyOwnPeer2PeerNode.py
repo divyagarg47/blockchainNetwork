@@ -10,8 +10,8 @@ from node import Node
 class MyOwnPeer2PeerNode (Node):
 
     # Python class constructor
-    def __init__(self, host, port, id=None, callback=None, max_connections=0):
-        super(MyOwnPeer2PeerNode, self).__init__(host, port, id, callback, max_connections)
+    def __init__(self, host, port, id=None, chain=[], transactionpool =[], callback=None, max_connections=5):
+        super(MyOwnPeer2PeerNode, self).__init__(host, port, id, chain,transactionpool,callback, max_connections)
         print("MyPeer2PeerNode: Started")
 
     # all the methods below are called when things happen in the network.
