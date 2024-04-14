@@ -15,8 +15,12 @@ class Message:
     
     def getMessageBody(self):
         return self.messagebody
-    def __str__(self,messagebody,type):
+    def __str__(self):
         return f"Message: {self.messagebody} of type {self.type}"
+    
+    # @classmethod
+    # def from_string(cls, string):
+        
 class Block:
     def __init__(self, index):
         self.index = index

@@ -168,13 +168,13 @@ class Node(threading.Thread):
             if n in exclude:
                 self.debug_print("Node send_to_nodes: Excluding node in sending the message")
             else:
-                self.send_to_node(n, str(data), compression)
+                self.send_to_node(n, data, compression)
 
         for n in self.nodes_outbound:
             if n in exclude:
                 self.debug_print("Node send_to_nodes: Excluding node in sending the message")
             else:
-                self.send_to_node(n, str(data), compression)
+                self.send_to_node(n, data, compression)
 
     def send_to_node(self, n, data, compression='none'):
         """ Send the data to the node n if it exists."""
@@ -396,21 +396,26 @@ class Node(threading.Thread):
             self.callback("outbound_node_disconnected", self, node, {})
 
     def node_message(self, node, data):
-        """This method is invoked when a node send us a message."""
-        self.debug_print("node_message: " + node.id + ": " + str(data))
-
-        if(data.id == BLOCKCHAIN):
-            self.receive_chain(data.messagebody)
+        """This method is invoked when a node send us a message.
+            data is a string, need to convert to a message object
+        """
+        self.debug_print("node_message: " + node.id + ": " + data)
+        parts = data.split(":")
+        messagebody = parts[1].split("of type")[0].strip()
+        type = parts[2].strip()
+        
+        if(type == BLOCKCHAIN):
+            self.receive_chain(messagebody)
             self.display_chain()
-        elif(data.id == TRANSACTION):
-            self.receive_data(data.messagebody,data.id)
+        elif(type == TRANSACTION):
+            self.receive_data(messagebody,type)
             print("Transaction received")
-            print(data.messagebody)
-        elif(data.id == BLOCK):
-            self.receive_data(data.messagebody,data.id)
+            print(messagebody)
+        elif(type == BLOCK):
+            self.receive_data(messagebody,type)
             print("Block received")
-            print(data.messagebody)
-        elif(data.id == ACCESS):
+            print(messagebody)
+        elif(type == ACCESS):
             print("Access request received from node {node.id}")
             print("Press 5 to accept the request")
             
