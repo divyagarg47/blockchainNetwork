@@ -6,7 +6,7 @@ import hashlib
 import datetime
 
 from nodeconnection import NodeConnection
-
+from constants import *
 """
 Author: Maurice Snoeren <macsnoeren(at)gmail.com>
 Version: 0.3 beta (use at your own risk)
@@ -17,17 +17,10 @@ Python package p2pnet for implementing decentralized peer-to-peer network applic
 TODO: Also create events when things go wrong, like a connection with a node has failed.
 """
 
-class Block:
-    def __init__(self, index):
-        self.index = index
 
-    @staticmethod
-    def create_genesis_block():
-        # Manually create the first block (genesis block)
-        return Block(0)
 
-    def __str__(self):
-        return f"Block #{self.index}"
+
+
 
 class Node(threading.Thread):
     """Implements a node that is able to connect to other nodes and is able to accept connections from other nodes.
@@ -44,7 +37,7 @@ class Node(threading.Thread):
                  connected_node: Which connected node caused the event.
                  data: The data that is send by the connected node."""
 
-    def __init__(self, host, port, id=None, chain=None, callback=None, max_connections=1):
+    def __init__(self, host, port, id=None, chain=[],transactionpool = [], callback=None, max_connections=1):
         """Create instance of a Node. If you want to implement the Node functionality with a callback, you should 
            provide a callback method. It is preferred to implement a new node by extending this Node class. 
             host: The host name or ip address that is used to bind the TCP/IP server to.
@@ -54,8 +47,8 @@ class Node(threading.Thread):
             max_connections: (optional) limiting the maximum nodes that are able to connect to this node."""
         super(Node, self).__init__()
 
-        self.chain = chain if chain else []
-
+        self.chain = chain 
+        self.transactionpool = transactionpool
         # When this flag is set, the node will stop and close
 
         self.terminate_flag = threading.Event()
@@ -118,7 +111,23 @@ class Node(threading.Thread):
         for block in self.chain:
             chain_string += str(block) + "\n"
         return chain_string
-
+    
+    def receive_data(self, transaction_string, rec_type):
+        # Parse the chain string and create block objects
+        # blocks_data = chain_string.strip().split('\n')
+        # self.chain = []
+        # for block_data in blocks_data:
+        index = int(transaction_string.split('#')[1].strip())
+        
+        if( rec_type == TRANSACTION):
+            transaction = Transaction(index)
+            
+            self.transactionpool.append(transaction)
+        elif(rec_type == BLOCK):
+            block = Block(index)
+            self.chain.append(block)
+        
+            
     def all_nodes(self):
         """Return a list of all the nodes, inbound and outbound, that are connected with this node."""
         return self.nodes_inbound | self.nodes_outbound
@@ -389,10 +398,22 @@ class Node(threading.Thread):
         """This method is invoked when a node send us a message."""
         self.debug_print("node_message: " + node.id + ": " + str(data))
 
-        if(True):
-            self.receive_chain(data)
+        if(data.id == BLOCKCHAIN):
+            self.receive_chain(data.messagebody)
             self.display_chain()
-
+        elif(data.id == TRANSACTION):
+            self.receive_data(data.messagebody,data.id)
+            print("Transaction received")
+            print(data.messagebody)
+        elif(data.id == BLOCK):
+            self.receive_data(data.messagebody,data.id)
+            print("Block received")
+            print(data.messagebody)
+        elif(data.id == ACCESS):
+            print("Access request received from node {node.id}")
+            print("Press 5 to accept the request")
+            
+            
         if self.callback is not None:
             self.callback("node_message", self, node, data)
 
