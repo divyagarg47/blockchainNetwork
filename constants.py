@@ -8,15 +8,18 @@ class Transaction:
         self.index = index 
     def __str__(self):
         return f"Transaction #{self.index}"
+    
 class Message:
-    def __init__(self,messagebody,type):
+    def __init__(self,messagebody,type,message_id,isBroadcast = False):
         self.messagebody = messagebody
         self.type = type
-    
+        self.messageid = message_id
+        self.isBroadcast = isBroadcast
+        
     def getMessageBody(self):
         return self.messagebody
     def __str__(self):
-        return f"Message: {self.messagebody} of type {self.type}"
+        return f"{self.messagebody}:{self.type}:{self.isBroadcast}:{self.messageid}"
     
     # @classmethod
     # def from_string(cls, string):

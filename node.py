@@ -49,6 +49,7 @@ class Node(threading.Thread):
 
         self.chain = chain 
         self.transactionpool = transactionpool
+        self.broadcasted_messages = set()  # Create an empty set
         # When this flag is set, the node will stop and close
 
         self.terminate_flag = threading.Event()
@@ -402,14 +403,17 @@ class Node(threading.Thread):
         self.debug_print("node_message: " + node.id + ": " + str(data))
         
         parts = str(data).split(":")
-        print(parts[1])
-        messagebody = parts[1].split("of type")[0].strip()
-        type = int(parts[1].split("of type")[1].strip())
+        messagebody = parts[0]
+        type = parts[1]
+        isBroadcast = parts[2]
+        message_id = int(parts[3])
 
         print(messagebody)
         print(type)
+        print(isBroadcast)
+        print(message_id)
         
-        if(type == BLOCKCHAIN):
+        if(type == BLOCKCHAIN): 
             self.receive_chain(messagebody)
             self.display_chain()
         elif(type == TRANSACTION):
@@ -424,6 +428,10 @@ class Node(threading.Thread):
             print("Access request received from node {node.id}")
             print("Press 5 to accept the request")
             
+        if isBroadcast:
+            if message_id not in self.broadcasted_messages:
+                self.broadcasted_messages.add(message_id)
+                self.send_to_nodes(data, exclude=[node])
             
         if self.callback is not None:
             self.callback("node_message", self, node, data)

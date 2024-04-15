@@ -38,3 +38,4 @@ class MyOwnPeer2PeerNode (Node):
     def node_request_to_stop(self):
         print("node is requested to stop (" + self.id + "): ")
         
+        
